@@ -7,7 +7,7 @@ use Mix.Config
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :live_view_counter, LiveViewCounterWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: String.to_integer(System.get_env("PORT", "4000"))],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
@@ -18,6 +18,16 @@ config :live_view_counter, LiveViewCounterWeb.Endpoint,
       "development",
       "--watch-stdin",
       cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
+
+config :libcluster,
+  topologies: [
+    epmd_example: [
+      strategy: Elixir.Cluster.Strategy.Epmd,
+      config: [
+        hosts: [:"fra@127.0.0.1", :"ams@127.0.0.1"]
+      ]
     ]
   ]
 

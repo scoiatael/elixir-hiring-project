@@ -15,7 +15,11 @@ defmodule LiveViewCounterWeb.Counter do
 
     list = Presence.list(@presence_topic)
     present = presence_by_region(list)
-    counts = Map.new([{fly_region(), Count.current()}])
+
+    counts =
+      Node.list([:this, :connected])
+      |> Enum.map(fn node -> Count.current(Count.via_node(node), true) end)
+      |> Map.new()
 
     {:ok, assign(socket, counts: counts, present: present, region: Count.fly_region())}
   end
@@ -91,13 +95,13 @@ defmodule LiveViewCounterWeb.Counter do
           <th>Users</th>
           <th>Clicks</th>
         </tr>
-        <%= for {k, v} <- @present do %>
+        <%= for {k, v} <- @counts do %>
         <tr>
           <th class="region">
             <img src="https://fly.io/ui/images/<%= k %>.svg" />
             <%= k %>
           </th>
-          <td><%= v %></td>
+          <td><%= Map.get(@present, to_string(k), 0) %></td>
           <td><%= Map.get(@counts, to_string(k), 0) %></td>
         </tr>
         <% end %>
