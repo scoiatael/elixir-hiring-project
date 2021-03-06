@@ -5,11 +5,10 @@ defmodule LiveViewCounterWeb.Counter do
   alias Phoenix.PubSub
   alias LiveViewCounter.Presence
 
-  @topic Count.topic()
   @presence_topic "presence"
 
   def mount(_params, _session, socket) do
-    PubSub.subscribe(LiveViewCounter.PubSub, @topic)
+    PubSub.subscribe(LiveViewCounter.PubSub, Count.topic())
 
     Presence.track(self(), @presence_topic, socket.id, %{region: Count.fly_region()})
     LiveViewCounterWeb.Endpoint.subscribe(@presence_topic)
